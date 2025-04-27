@@ -1063,17 +1063,29 @@ class SidebarConstructor {
             return;
         }
 
+        let buttonWrapClass = '';
         let labelWrapClass = '';
         let valueWrapClass = '';
         if (this.store.config.viewMode === GraphConfig.ViewModes.DEFAULT) {
+             buttonWrapClass = 'property-button-wrap';
              labelWrapClass = 'property-label-wrap';
              valueWrapClass = 'property-value-wrap';
         }
 
-        const createPropertyRow = (key, value) => {
+        const createPropertyRow = (button, key, value) => {
             const property = document.createElement('div');
             property.className = 'property';
+
+            // Create radio buttom element
+            const radioButton = document.createElement('input');
+            radioButton.setAttribute('type', 'radio');
+            radioButton.setAttribute('name', 'property-radio');
+            radioButton.className = `property-button ${buttonWrapClass}`;
+            radioButton.value = button;
             
+            radioButton.addEventListener('click', () => {
+                ;
+            });
             // Create label element
             const labelDiv = document.createElement('div');
             labelDiv.className = `property-label ${labelWrapClass}`;
@@ -1201,6 +1213,7 @@ class SidebarConstructor {
             });
             
             // Add both elements to the property container
+            property.appendChild(radioButton);
             property.appendChild(labelDiv);
             property.appendChild(valueDiv);
             
@@ -1209,8 +1222,8 @@ class SidebarConstructor {
 
         const properties = Object
             .entries(selectedObject.properties)
-            .map(([key, value]) =>
-                createPropertyRow(key, value));
+            .map(([button, key, value]) =>
+                createPropertyRow(button, key, value));
 
         this.elements.properties = this._createSection('Properties', properties, true);
         this.elements.properties.title.innerHTML = `Properties <span class="count">${properties.length}</span>`;
