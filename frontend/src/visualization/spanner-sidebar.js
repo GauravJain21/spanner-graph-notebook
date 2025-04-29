@@ -1082,10 +1082,7 @@ class SidebarConstructor {
             radioButton.setAttribute('name', 'property-radio');
             radioButton.className = `property-button ${buttonWrapClass}`;
             radioButton.value = button;
-            
-            radioButton.addEventListener('click', () => {
-                ;
-            });
+
             // Create label element
             const labelDiv = document.createElement('div');
             labelDiv.className = `property-label ${labelWrapClass}`;
@@ -1211,6 +1208,23 @@ class SidebarConstructor {
                     console.error('Could not copy text: ', err);
                 });
             });
+
+            radioButton.addEventListener('click', () => {
+                if (selectedNode instanceof GraphNode) {
+                    // Check if "Show Labels" is enabled
+                    if (this.store.config.showLabels) {
+                        // Update the node's label to include the selected property's ID
+                        const nodeLabel = labelDiv.labelString
+                        const updatedLabel = `${nodeLabel} (${key})`; // Append the property ID in parentheses
+                        this.store.config.selectedGraphObject.setLabels(labelDiv.labelString);
+            
+                        // Refresh the sidebar to reflect the updated label
+                        this.refresh();
+                    } else {
+                        console.warn('Labels are currently hidden. Enable "Show Labels" to see updates.');
+                    }
+                }
+            });
             
             // Add both elements to the property container
             property.appendChild(radioButton);
@@ -1220,10 +1234,7 @@ class SidebarConstructor {
             return property;
         }
 
-        const properties = Object
-            .entries(selectedObject.properties)
-            .map(([button, key, value]) =>
-                createPropertyRow(button, key, value));
+        const properties = Object.entries(selectedObject.properties).map(([key, value], index) => createPropertyRow(`Button ${index + 1}`, key, value));
 
         this.elements.properties = this._createSection('Properties', properties, true);
         this.elements.properties.title.innerHTML = `Properties <span class="count">${properties.length}</span>`;
